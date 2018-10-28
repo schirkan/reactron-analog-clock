@@ -1,0 +1,52 @@
+{
+    "name": "reactron-analog-clock",
+    "version": "0.0.1",
+    "author": {
+        "name": "Martin Pietschmann",
+        "email": "schirkan@gmail.com"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/schirkan/reactron-analog-clock"
+    },
+    "browser": "dist/bundle.browser.js",
+    "main": "dist/bundle.server.js",
+    "scripts": {
+        "build": "npm run build:browser",
+        "build:browser": "rollup -c rollup.config.browser.js",
+        "watch:browser": "rollup -c rollup.config.browser.js -w"
+    },
+    "dependencies": {
+        "moment-timezone": "^0.5.21",
+        "react": "^16.6.0",
+        "react-dom": "^16.6.0"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.1.2",
+        "@babel/core": "^7.1.2",
+        "@babel/plugin-external-helpers": "^7.0.0",
+        "@babel/plugin-proposal-class-properties": "^7.1.0",
+        "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+        "@babel/plugin-transform-runtime": "^7.1.0",
+        "@babel/preset-env": "^7.1.0",
+        "@babel/preset-react": "^7.0.0",
+        "@babel/register": "^7.0.0",
+        "classnames": "^2.2.6",
+        "css-loader": "^1.0.0",
+        "node-sass": "^4.9.4",
+        "postcss-scss": "^2.0.0",
+        "rollup": "^0.66.6",
+        "rollup-plugin-babel": "^4.0.3",
+        "rollup-plugin-commonjs": "^9.2.0",
+        "rollup-plugin-node-resolve": "^3.4.0",
+        "rollup-plugin-postcss": "^1.6.2",
+        "rollup-plugin-replace": "^2.1.0",
+        "rollup-plugin-serve": "^0.6.0",
+        "rollup-plugin-typescript": "^1.0.0",
+        "rollup-watch": "^4.3.1",
+        "style-loader": "^0.23.1",
+        "typescript": "^3.1.3",
+        "url-loader": "^1.1.2"
+    }
+}
