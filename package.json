@@ -11,7 +11,6 @@
         "url": "https://github.com/schirkan/reactron-analog-clock"
     },
     "browser": "dist/bundle.browser.js",
-    "main": "dist/bundle.server.js",
     "scripts": {
         "build": "npm run build:browser",
         "build:browser": "rollup -c rollup.config.browser.js",
