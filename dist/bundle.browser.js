@@ -96,23 +96,23 @@ System.register(['react'], function (exports, module) {
                  */
                 AnalogClock.prototype.initInternationalClocks = function () {
                     // Initialise the clock settings and the three times
-                    var times = getTimes();
+                    var times = [{ jsclass: 'js-new-york', jstime: new Date() }]; // getTimes();
                     for (var i = 0; i < times.length; ++i) {
                         var hours = times[i].jstime.format('h');
                         var minutes = times[i].jstime.format('mm');
                         var seconds = times[i].jstime.format('ss');
                         var degrees = [
                             {
-                                hand: 'hours',
-                                degree: (hours * 30) + (minutes / 2)
+                                degree: (hours * 30) + (minutes / 2),
+                                hand: 'hours'
                             },
                             {
-                                hand: 'minutes',
-                                degree: (minutes * 6)
+                                degree: (minutes * 6),
+                                hand: 'minutes'
                             },
                             {
-                                hand: 'seconds',
-                                degree: (seconds * 6)
+                                degree: (seconds * 6),
+                                hand: 'seconds'
                             }
                         ];
                         for (var j = 0; j < degrees.length; j++) {
@@ -145,16 +145,16 @@ System.register(['react'], function (exports, module) {
                     // Create an object with each hand and it's angle in degrees
                     var hands = [
                         {
-                            hand: 'hours',
-                            angle: (hours * 30) + (minutes / 2)
+                            angle: (hours * 30) + (minutes / 2),
+                            hand: 'hours'
                         },
                         {
-                            hand: 'minutes',
-                            angle: (minutes * 6)
+                            angle: (minutes * 6),
+                            hand: 'minutes'
                         },
                         {
-                            hand: 'seconds',
-                            angle: (seconds * 6)
+                            angle: (seconds * 6),
+                            hand: 'seconds'
                         }
                     ];
                     // Loop through each of these hands to set their angle
@@ -274,8 +274,7 @@ System.register(['react'], function (exports, module) {
                     component: AnalogClock$1,
                     description: 'Analog Clock',
                     displayName: 'Analog Clock',
-                    name: 'AnalogClock',
-                    options: [{
+                    fields: [{
                             defaultValue: 'simple',
                             description: 'Clock style',
                             displayName: 'Style',
@@ -316,7 +315,8 @@ System.register(['react'], function (exports, module) {
                                 { value: 'Asia/Tokyo', text: 'Asia/Tokyo' },
                                 { value: 'America/New_York', text: 'America/New York' },
                             ]
-                        }]
+                        }],
+                    name: 'AnalogClock'
                 }]);
 
         }

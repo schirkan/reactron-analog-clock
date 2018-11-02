@@ -40,28 +40,28 @@ export class AnalogClock extends React.Component<IAnalogClockProps> {
    */
   public initInternationalClocks() {
     // Initialise the clock settings and the three times
-    let times = getTimes();
+    const times = [{ jsclass: 'js-new-york', jstime: new Date() }] // getTimes();
     for (let i = 0; i < times.length; ++i) {
-      let hours = times[i].jstime.format('h');
-      let minutes = times[i].jstime.format('mm');
-      let seconds = times[i].jstime.format('ss');
+      const hours = times[i].jstime.format('h');
+      const minutes = times[i].jstime.format('mm');
+      const seconds = times[i].jstime.format('ss');
 
-      let degrees = [
+      const degrees = [
         {
-          hand: 'hours',
-          degree: (hours * 30) + (minutes / 2)
+          degree: (hours * 30) + (minutes / 2),
+          hand: 'hours'
         },
         {
-          hand: 'minutes',
-          degree: (minutes * 6)
+          degree: (minutes * 6),
+          hand: 'minutes'
         },
         {
-          hand: 'seconds',
-          degree: (seconds * 6)
+          degree: (seconds * 6),
+          hand: 'seconds'
         }
       ];
       for (let j = 0; j < degrees.length; j++) {
-        let elements = document.querySelectorAll('.active .' + times[i].jsclass + ' .' + degrees[j].hand);
+        const elements = document.querySelectorAll('.active .' + times[i].jsclass + ' .' + degrees[j].hand);
         for (let k = 0; k < elements.length; k++) {
           elements[k].style.webkitTransform = 'rotateZ(' + degrees[j].degree + 'deg)';
           elements[k].style.transform = 'rotateZ(' + degrees[j].degree + 'deg)';
@@ -73,7 +73,7 @@ export class AnalogClock extends React.Component<IAnalogClockProps> {
       }
     }
     // Add a class to the clock container to show it
-    let elements = document.querySelectorAll('.clock');
+    const elements = document.querySelectorAll('.clock');
     for (let l = 0; l < elements.length; l++) {
       elements[l].className = elements[l].className + ' show';
     }
@@ -92,16 +92,16 @@ export class AnalogClock extends React.Component<IAnalogClockProps> {
     // Create an object with each hand and it's angle in degrees
     const hands = [
       {
-        hand: 'hours',
-        angle: (hours * 30) + (minutes / 2)
+        angle: (hours * 30) + (minutes / 2),
+        hand: 'hours'
       },
       {
-        hand: 'minutes',
-        angle: (minutes * 6)
+        angle: (minutes * 6),
+        hand: 'minutes'
       },
       {
-        hand: 'seconds',
-        angle: (seconds * 6)
+        angle: (seconds * 6),
+        hand: 'seconds'
       }
     ];
     // Loop through each of these hands to set their angle

@@ -7,8 +7,7 @@ export const components: IComponentDefinition[] = [{
     component: AnalogClock,
     description: 'Analog Clock',
     displayName: 'Analog Clock',
-    name: 'AnalogClock',
-    options: [{
+    fields: [{
         defaultValue: 'simple',
         description: 'Clock style',
         displayName: 'Style',
@@ -49,5 +48,6 @@ export const components: IComponentDefinition[] = [{
             { value: 'Asia/Tokyo', text: 'Asia/Tokyo' },
             { value: 'America/New_York', text: 'America/New York' },
         ]
-    }]
+    }],
+    name: 'AnalogClock'
 }];
