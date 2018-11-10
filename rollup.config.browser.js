@@ -31,6 +31,8 @@ export default {
     ],
     external: [
         'react',
-        'react-dom'
+        'react-dom',
+        'moment',
+        'moment-timezone'
     ]
 };

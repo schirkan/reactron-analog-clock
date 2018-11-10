@@ -11,7 +11,7 @@ export const components: IComponentDefinition[] = [{
         defaultValue: 'simple',
         description: 'Clock style',
         displayName: 'Style',
-        name: 'text',
+        name: 'style',
         valueType: 'string',
         values: [
             { value: 'simple', text: 'Simple' },
@@ -22,7 +22,7 @@ export const components: IComponentDefinition[] = [{
         defaultValue: 'bounce',
         description: 'Clock Animation',
         displayName: 'Animation',
-        name: 'text',
+        name: 'animation',
         valueType: 'string',
         values: [
             { value: 'bounce', text: 'Bounce' },
@@ -33,13 +33,13 @@ export const components: IComponentDefinition[] = [{
         defaultValue: '',
         description: 'Label',
         displayName: 'Label',
-        name: 'text',
+        name: 'label',
         valueType: 'string'
     },{
         defaultValue: 'local',
         description: 'Timezone',
         displayName: 'Timezone',
-        name: 'text',
+        name: 'timezone',
         valueType: 'string',
         values: [
             { value: 'local', text: 'Local' },

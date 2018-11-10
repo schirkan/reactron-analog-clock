@@ -1,12 +1,18 @@
 import * as React from 'react';
 
-import './AnalogClock.css';
+import styles from './AnalogClock.scss';
+
+// tslint:disable:no-string-literal
+// tslint:disable:no-var-requires
+
+const moment = require('moment');
+const momentTimezone = require('moment-timezone');
 
 export interface IAnalogClockOptions {
-  style: string;
+  style: 'simple' | 'station' | 'ios7';
   label: string;
   timezone: string;
-  animation: string;
+  animation: 'bounce' | 'steps' | 'linear';
 }
 
 export interface IAnalogClockProps {
@@ -15,13 +21,22 @@ export interface IAnalogClockProps {
 
 export class AnalogClock extends React.Component<IAnalogClockProps> {
   private intervals: number[] = [];
+  private secondsAngle: number = 0;
+
+  private hoursContainer: Element | null;
+  private minutesContainer: Element | null;
+  private secondsContainer: Element | null;
+
+  private clockElement: Element | null;
+
+  private hoursElement: Element | null;
+  private minutesElement: Element | null;
+  private secondsElement: Element | null;
 
   // Main public to set the clock times
   public componentDidMount() {
     // Initialise the locale-enabled clocks
-    this.initInternationalClocks();
-    // Initialise any local time clocks
-    this.initLocalClocks();
+    this.initClock();
     // Start the seconds container moving
     this.moveSecondHands();
     // Set the intial minute hand container transition, and then each subsequent step
@@ -38,193 +53,127 @@ export class AnalogClock extends React.Component<IAnalogClockProps> {
   /*
    * Set up the clocks that use moment.js
    */
-  public initInternationalClocks() {
-    // Initialise the clock settings and the three times
-    const times = [{ jsclass: 'js-new-york', jstime: new Date() }] // getTimes();
-    for (let i = 0; i < times.length; ++i) {
-      const hours = times[i].jstime.format('h');
-      const minutes = times[i].jstime.format('mm');
-      const seconds = times[i].jstime.format('ss');
+  public initClock() {
+    const now = new Date();
+    const time = moment(now).tz(this.props.options.timezone); // "America/New_York"
 
-      const degrees = [
-        {
-          degree: (hours * 30) + (minutes / 2),
-          hand: 'hours'
-        },
-        {
-          degree: (minutes * 6),
-          hand: 'minutes'
-        },
-        {
-          degree: (seconds * 6),
-          hand: 'seconds'
-        }
-      ];
-      for (let j = 0; j < degrees.length; j++) {
-        const elements = document.querySelectorAll('.active .' + times[i].jsclass + ' .' + degrees[j].hand);
-        for (let k = 0; k < elements.length; k++) {
-          elements[k].style.webkitTransform = 'rotateZ(' + degrees[j].degree + 'deg)';
-          elements[k].style.transform = 'rotateZ(' + degrees[j].degree + 'deg)';
-          // If this is a minute hand, note the seconds position (to calculate minute position later)
-          if (degrees[j].hand === 'minutes') {
-            elements[k].parentNode.setAttribute('data-second-angle', degrees[j + 1].degree);
-          }
-        }
+    const hours = time.hours();
+    const minutes = time.minutes();
+    const seconds = time.seconds();
+
+    const degrees = {
+      hours: (hours * 30) + (minutes / 2),
+      minutes: (minutes * 6),
+      seconds: (seconds * 6),
+    };
+
+    Object.keys(degrees).forEach(key => {
+      const degree = degrees[key];
+      let element: Element | null = null;
+      switch (key) {
+        case 'hours':
+          element = this.hoursElement;
+          break;
+        case 'minutes':
+          element = this.minutesElement;
+          break;
+        case 'seconds':
+          element = this.secondsElement;
+          break;
       }
-    }
-    // Add a class to the clock container to show it
-    const elements = document.querySelectorAll('.clock');
-    for (let l = 0; l < elements.length; l++) {
-      elements[l].className = elements[l].className + ' show';
-    }
-  }
 
-  /*
-   * Starts any clocks using the user's local time
-   */
-  public initLocalClocks() {
-    // Get the local time using JS
-    const date = new Date;
-    const seconds = date.getSeconds();
-    const minutes = date.getMinutes();
-    const hours = date.getHours();
-
-    // Create an object with each hand and it's angle in degrees
-    const hands = [
-      {
-        angle: (hours * 30) + (minutes / 2),
-        hand: 'hours'
-      },
-      {
-        angle: (minutes * 6),
-        hand: 'minutes'
-      },
-      {
-        angle: (seconds * 6),
-        hand: 'seconds'
-      }
-    ];
-    // Loop through each of these hands to set their angle
-    for (let j = 0; j < hands.length; j++) {
-      const elements = document.querySelectorAll('.local .' + hands[j].hand);
-      for (let k = 0; k < elements.length; k++) {
-        elements[k].style.transform = 'rotateZ(' + hands[j].angle + 'deg)';
+      if (element) {
+        element.style.webkitTransform = 'rotateZ(' + degree + 'deg)';
+        element.style.transform = 'rotateZ(' + degree + 'deg)';
         // If this is a minute hand, note the seconds position (to calculate minute position later)
-        if (hands[j].hand === 'minutes') {
-          elements[k].parentNode.setAttribute('data-second-angle', hands[j + 1].angle);
-        }
       }
-    }
+    });
+
+    this.secondsAngle = degrees.seconds;
   }
 
   /*
    * Move the second containers
    */
   public moveSecondHands() {
-    const containers = document.querySelectorAll('.bounce .seconds-container');
+    if (!this.clockElement || !this.secondsContainer || this.props.options.animation !== 'bounce') {
+      return;
+    }
+
     setInterval(() => {
-      for (let i = 0; i < containers.length; i++) {
-        if (containers[i].angle === undefined) {
-          containers[i].angle = 6;
+      if (this.secondsContainer) {
+        if (this.secondsContainer.angle === undefined) {
+          this.secondsContainer.angle = 6;
         } else {
-          containers[i].angle += 6;
+          this.secondsContainer.angle += 6;
         }
-        containers[i].style.webkitTransform = 'rotateZ(' + containers[i].angle + 'deg)';
-        containers[i].style.transform = 'rotateZ(' + containers[i].angle + 'deg)';
+        this.secondsContainer.style.webkitTransform = 'rotateZ(' + this.secondsContainer.angle + 'deg)';
+        this.secondsContainer.style.transform = 'rotateZ(' + this.secondsContainer.angle + 'deg)';
       }
     }, 1000);
-    for (let i = 0; i < containers.length; i++) {
-      // Add in a little delay to make them feel more natural
-      const randomOffset = Math.floor(Math.random() * (100 - 10 + 1)) + 10;
-      containers[i].style.transitionDelay = '0.0' + randomOffset + 's';
-    }
+
+    // Add in a little delay to make them feel more natural
+    const randomOffset = Math.floor(Math.random() * (100 - 10 + 1)) + 10;
+    this.secondsContainer.style.transitionDelay = '0.0' + randomOffset + 's';
   }
 
   /*
    * Set a timeout for the first minute hand movement (less than 1 minute), then rotate it every minute after that
    */
   public setUpMinuteHands() {
-    // More tricky, this needs to move the minute hand when the second hand hits zero
-    const containers = document.querySelectorAll('.minutes-container');
-    const secondAngle = containers[containers.length - 1].getAttribute('data-second-angle');
-    console.log(secondAngle);
-    if (secondAngle > 0) {
-      // Set a timeout until the end of the current minute, to move the hand
-      const delay = (((360 - secondAngle) / 6) + 0.1) * 1000;
-      console.log(delay);
-      setTimeout(() => {
-        moveMinuteHands(containers);
-      }, delay);
-    }
+    // this needs to move the minute hand when the second hand hits zero
+    // Set a timeout until the end of the current minute, to move the hand
+    const delay = (((360 - this.secondsAngle) / 6) + 0.1) * 1000;
+    setTimeout(() => this.moveMinuteHands(), delay);
   }
 
   /*
    * Do the first minute's rotation, then move every 60 seconds after
    */
-  public moveMinuteHands(containers) {
-    for (let i = 0; i < containers.length; i++) {
-      containers[i].style.webkitTransform = 'rotateZ(6deg)';
-      containers[i].style.transform = 'rotateZ(6deg)';
+  public moveMinuteHands() {
+    if (!this.minutesContainer) {
+      return;
     }
+
+    this.minutesContainer.style.webkitTransform = 'rotateZ(6deg)';
+    this.minutesContainer.style.transform = 'rotateZ(6deg)';
+
     // Then continue with a 60 second interval
     setInterval(() => {
-      for (let i = 0; i < containers.length; i++) {
-        if (containers[i].angle === undefined) {
-          containers[i].angle = 12;
+      if (this.minutesContainer) {
+        if (this.minutesContainer.angle === undefined) {
+          this.minutesContainer.angle = 12;
         } else {
-          containers[i].angle += 6;
+          this.minutesContainer.angle += 6;
         }
-        containers[i].style.webkitTransform = 'rotateZ(' + containers[i].angle + 'deg)';
-        containers[i].style.transform = 'rotateZ(' + containers[i].angle + 'deg)';
+        this.minutesContainer.style.webkitTransform = 'rotateZ(' + this.minutesContainer.angle + 'deg)';
+        this.minutesContainer.style.transform = 'rotateZ(' + this.minutesContainer.angle + 'deg)';
       }
     }, 60000);
   }
 
   public render() {
-    const className = 'clock ' + this.props.options.style + ' ' + this.props.options.animation;
+    const className = styles['clock'] + ' ' +
+      styles[this.props.options.style] + ' ' +
+      styles[this.props.options.animation];
 
     return (
-      <section className="AnalogClock">
-        <div className={className}>
-          {this.props.options.label && (
-            <div className="label">{this.props.options.label}</div>
-          )}
-          <div className="hours-container">
-            <div className="hours" />
+      <section className={styles['AnalogClock']}>
+        <div className={className} ref={el => this.clockElement = el}>
+          <div className={styles['hours-container']} ref={el => this.hoursContainer = el}>
+            <div className={styles['hours']} ref={el => this.hoursElement = el} />
           </div>
-          <div className="minutes-container">
-            <div className="minutes" />
+          <div className={styles['minutes-container']} ref={el => this.minutesContainer = el}>
+            <div className={styles['minutes']} ref={el => this.minutesElement = el} />
           </div>
-          <div className="seconds-container">
-            <div className="seconds" />
+          <div className={styles['seconds-container']} ref={el => this.secondsContainer = el}>
+            <div className={styles['seconds']} ref={el => this.secondsElement = el} />
           </div>
         </div>
+        {this.props.options.label && (
+          <div className={styles['label']}>{this.props.options.label}</div>
+        )}
       </section>
     );
   }
 }
-
-//  public getTimes() {
-//   moment.tz.add([
-//     'Eire|GMT IST|0 -10|01010101010101010101010|1BWp0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00 11A0 1o00 11A0 1qM0 WM0 1qM0 WM0 1qM0 11A0 1o00 11A0 1o00',
-//     'Asia/Tokyo|JST|-90|0|',
-//     'America/New_York|EST EDT|50 40|0101|1Lz50 1zb0 Op0'
-//     ]);
-//   var now = new Date();
-//   // Set the time manually for each of the clock types we're using
-//   var times = [
-//     {
-//       jsclass: 'js-tokyo',
-//       jstime: moment.tz(now, "Asia/Tokyo")
-//     },
-//     {
-//       jsclass: 'js-london',
-//       jstime: moment.tz(now, "Eire")
-//     },
-//     {
-//       jsclass: 'js-new-york',
-//       jstime: moment.tz(now, "America/New_York")
-//     }
-//   ];
-//   return times;
-// }
