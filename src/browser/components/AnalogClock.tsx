@@ -33,6 +33,14 @@ export class AnalogClock extends React.Component<IAnalogClockProps> {
   private minutesElement: Element | null;
   private secondsElement: Element | null;
 
+  constructor(props: IAnalogClockProps) {
+    super(props);
+
+    this.onSecondsTick = this.onSecondsTick.bind(this);
+    this.onMinutesTick = this.onMinutesTick.bind(this);
+    this.moveMinuteHands = this.moveMinuteHands.bind(this);
+  }
+
   // Main public to set the clock times
   public componentDidMount() {
     // Initialise the locale-enabled clocks
@@ -53,7 +61,7 @@ export class AnalogClock extends React.Component<IAnalogClockProps> {
   /*
    * Set up the clocks that use moment.js
    */
-  public initClock() {
+  private initClock() {
     const now = new Date();
     const time = moment(now).tz(this.props.options.timezone); // "America/New_York"
 
@@ -95,42 +103,46 @@ export class AnalogClock extends React.Component<IAnalogClockProps> {
   /*
    * Move the second containers
    */
-  public moveSecondHands() {
+  private moveSecondHands() {
     if (!this.clockElement || !this.secondsContainer || this.props.options.animation !== 'bounce') {
       return;
     }
 
-    setInterval(() => {
-      if (this.secondsContainer) {
-        if (this.secondsContainer.angle === undefined) {
-          this.secondsContainer.angle = 6;
-        } else {
-          this.secondsContainer.angle += 6;
-        }
-        this.secondsContainer.style.webkitTransform = 'rotateZ(' + this.secondsContainer.angle + 'deg)';
-        this.secondsContainer.style.transform = 'rotateZ(' + this.secondsContainer.angle + 'deg)';
-      }
-    }, 1000);
+    const interval = window.setInterval(this.onSecondsTick, 1000);
+    this.intervals.push(interval);
 
     // Add in a little delay to make them feel more natural
     const randomOffset = Math.floor(Math.random() * (100 - 10 + 1)) + 10;
     this.secondsContainer.style.transitionDelay = '0.0' + randomOffset + 's';
   }
 
+  private onSecondsTick() {
+    if (this.secondsContainer) {
+      if (this.secondsContainer.angle === undefined) {
+        this.secondsContainer.angle = 6;
+      } else {
+        this.secondsContainer.angle += 6;
+      }
+      this.secondsContainer.style.webkitTransform = 'rotateZ(' + this.secondsContainer.angle + 'deg)';
+      this.secondsContainer.style.transform = 'rotateZ(' + this.secondsContainer.angle + 'deg)';
+    }
+  }
+
   /*
    * Set a timeout for the first minute hand movement (less than 1 minute), then rotate it every minute after that
    */
-  public setUpMinuteHands() {
+  private setUpMinuteHands() {
     // this needs to move the minute hand when the second hand hits zero
     // Set a timeout until the end of the current minute, to move the hand
     const delay = (((360 - this.secondsAngle) / 6) + 0.1) * 1000;
-    setTimeout(() => this.moveMinuteHands(), delay);
+    const timout = window.setTimeout(this.moveMinuteHands, delay);
+    this.intervals.push(timout);
   }
 
   /*
    * Do the first minute's rotation, then move every 60 seconds after
    */
-  public moveMinuteHands() {
+  private moveMinuteHands() {
     if (!this.minutesContainer) {
       return;
     }
@@ -139,17 +151,20 @@ export class AnalogClock extends React.Component<IAnalogClockProps> {
     this.minutesContainer.style.transform = 'rotateZ(6deg)';
 
     // Then continue with a 60 second interval
-    setInterval(() => {
-      if (this.minutesContainer) {
-        if (this.minutesContainer.angle === undefined) {
-          this.minutesContainer.angle = 12;
-        } else {
-          this.minutesContainer.angle += 6;
-        }
-        this.minutesContainer.style.webkitTransform = 'rotateZ(' + this.minutesContainer.angle + 'deg)';
-        this.minutesContainer.style.transform = 'rotateZ(' + this.minutesContainer.angle + 'deg)';
+    const interval = window.setInterval(this.onMinutesTick, 60000);
+    this.intervals.push(interval);
+  }
+
+  private onMinutesTick() {
+    if (this.minutesContainer) {
+      if (this.minutesContainer.angle === undefined) {
+        this.minutesContainer.angle = 12;
+      } else {
+        this.minutesContainer.angle += 6;
       }
-    }, 60000);
+      this.minutesContainer.style.webkitTransform = 'rotateZ(' + this.minutesContainer.angle + 'deg)';
+      this.minutesContainer.style.transform = 'rotateZ(' + this.minutesContainer.angle + 'deg)';
+    }
   }
 
   public render() {

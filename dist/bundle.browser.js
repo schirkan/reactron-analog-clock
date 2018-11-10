@@ -74,10 +74,13 @@ System.register(['react'], function (exports, module) {
             var momentTimezone = require('moment-timezone');
             var AnalogClock = exports('AnalogClock', /** @class */ (function (_super) {
                 __extends(AnalogClock, _super);
-                function AnalogClock() {
-                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                function AnalogClock(props) {
+                    var _this = _super.call(this, props) || this;
                     _this.intervals = [];
                     _this.secondsAngle = 0;
+                    _this.onSecondsTick = _this.onSecondsTick.bind(_this);
+                    _this.onMinutesTick = _this.onMinutesTick.bind(_this);
+                    _this.moveMinuteHands = _this.moveMinuteHands.bind(_this);
                     return _this;
                 }
                 // Main public to set the clock times
@@ -136,59 +139,61 @@ System.register(['react'], function (exports, module) {
                  * Move the second containers
                  */
                 AnalogClock.prototype.moveSecondHands = function () {
-                    var _this = this;
                     if (!this.clockElement || !this.secondsContainer || this.props.options.animation !== 'bounce') {
                         return;
                     }
-                    setInterval(function () {
-                        if (_this.secondsContainer) {
-                            if (_this.secondsContainer.angle === undefined) {
-                                _this.secondsContainer.angle = 6;
-                            }
-                            else {
-                                _this.secondsContainer.angle += 6;
-                            }
-                            _this.secondsContainer.style.webkitTransform = 'rotateZ(' + _this.secondsContainer.angle + 'deg)';
-                            _this.secondsContainer.style.transform = 'rotateZ(' + _this.secondsContainer.angle + 'deg)';
-                        }
-                    }, 1000);
+                    var interval = window.setInterval(this.onSecondsTick, 1000);
+                    this.intervals.push(interval);
                     // Add in a little delay to make them feel more natural
                     var randomOffset = Math.floor(Math.random() * (100 - 10 + 1)) + 10;
                     this.secondsContainer.style.transitionDelay = '0.0' + randomOffset + 's';
+                };
+                AnalogClock.prototype.onSecondsTick = function () {
+                    if (this.secondsContainer) {
+                        if (this.secondsContainer.angle === undefined) {
+                            this.secondsContainer.angle = 6;
+                        }
+                        else {
+                            this.secondsContainer.angle += 6;
+                        }
+                        this.secondsContainer.style.webkitTransform = 'rotateZ(' + this.secondsContainer.angle + 'deg)';
+                        this.secondsContainer.style.transform = 'rotateZ(' + this.secondsContainer.angle + 'deg)';
+                    }
                 };
                 /*
                  * Set a timeout for the first minute hand movement (less than 1 minute), then rotate it every minute after that
                  */
                 AnalogClock.prototype.setUpMinuteHands = function () {
-                    var _this = this;
                     // this needs to move the minute hand when the second hand hits zero
                     // Set a timeout until the end of the current minute, to move the hand
                     var delay = (((360 - this.secondsAngle) / 6) + 0.1) * 1000;
-                    setTimeout(function () { return _this.moveMinuteHands(); }, delay);
+                    var timout = window.setTimeout(this.moveMinuteHands, delay);
+                    this.intervals.push(timout);
                 };
                 /*
                  * Do the first minute's rotation, then move every 60 seconds after
                  */
                 AnalogClock.prototype.moveMinuteHands = function () {
-                    var _this = this;
                     if (!this.minutesContainer) {
                         return;
                     }
                     this.minutesContainer.style.webkitTransform = 'rotateZ(6deg)';
                     this.minutesContainer.style.transform = 'rotateZ(6deg)';
                     // Then continue with a 60 second interval
-                    setInterval(function () {
-                        if (_this.minutesContainer) {
-                            if (_this.minutesContainer.angle === undefined) {
-                                _this.minutesContainer.angle = 12;
-                            }
-                            else {
-                                _this.minutesContainer.angle += 6;
-                            }
-                            _this.minutesContainer.style.webkitTransform = 'rotateZ(' + _this.minutesContainer.angle + 'deg)';
-                            _this.minutesContainer.style.transform = 'rotateZ(' + _this.minutesContainer.angle + 'deg)';
+                    var interval = window.setInterval(this.onMinutesTick, 60000);
+                    this.intervals.push(interval);
+                };
+                AnalogClock.prototype.onMinutesTick = function () {
+                    if (this.minutesContainer) {
+                        if (this.minutesContainer.angle === undefined) {
+                            this.minutesContainer.angle = 12;
                         }
-                    }, 60000);
+                        else {
+                            this.minutesContainer.angle += 6;
+                        }
+                        this.minutesContainer.style.webkitTransform = 'rotateZ(' + this.minutesContainer.angle + 'deg)';
+                        this.minutesContainer.style.transform = 'rotateZ(' + this.minutesContainer.angle + 'deg)';
+                    }
                 };
                 AnalogClock.prototype.render = function () {
                     var _this = this;
