@@ -1,3 +1,4 @@
+import { IReactronComponentProps } from '@schirkan/reactron-interfaces';
 import * as React from 'react';
 
 import styles from './AnalogClock.scss';
@@ -15,11 +16,7 @@ export interface IAnalogClockOptions {
   animation: 'bounce' | 'steps' | 'linear';
 }
 
-export interface IAnalogClockProps {
-  options: IAnalogClockOptions;
-}
-
-export class AnalogClock extends React.Component<IAnalogClockProps> {
+export class AnalogClock extends React.Component<IReactronComponentProps<IAnalogClockOptions>> {
   private intervals: number[] = [];
   private secondsAngle: number = 0;
 
@@ -33,7 +30,7 @@ export class AnalogClock extends React.Component<IAnalogClockProps> {
   private minutesElement: Element | null;
   private secondsElement: Element | null;
 
-  constructor(props: IAnalogClockProps) {
+  constructor(props: IReactronComponentProps<IAnalogClockOptions>) {
     super(props);
 
     this.onSecondsTick = this.onSecondsTick.bind(this);

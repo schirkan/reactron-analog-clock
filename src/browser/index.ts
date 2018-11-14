@@ -1,9 +1,9 @@
-import { IComponentDefinition } from '../common/interfaces/IComponentDefinition';
+import { IReactronComponentDefinition } from '@schirkan/reactron-interfaces';
 import { AnalogClock } from './components/AnalogClock';
 
 export * from './components/AnalogClock';
 
-export const components: IComponentDefinition[] = [{
+export const components: IReactronComponentDefinition[] = [{
     component: AnalogClock,
     description: 'Analog Clock',
     displayName: 'Analog Clock',
