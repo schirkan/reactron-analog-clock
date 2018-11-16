@@ -104,7 +104,8 @@ System.register(['react'], function (exports, module) {
                 AnalogClock.prototype.initClock = function () {
                     var _this = this;
                     var now = new Date();
-                    var time = moment(now).tz(this.props.options.timezone); // "America/New_York"
+                    var tz = this.props.timezone !== 'local' ? this.props.timezone : '';
+                    var time = moment(now).tz(tz);
                     var hours = time.hours();
                     var minutes = time.minutes();
                     var seconds = time.seconds();
@@ -139,7 +140,7 @@ System.register(['react'], function (exports, module) {
                  * Move the second containers
                  */
                 AnalogClock.prototype.moveSecondHands = function () {
-                    if (!this.clockElement || !this.secondsContainer || this.props.options.animation !== 'bounce') {
+                    if (!this.clockElement || !this.secondsContainer || this.props.animation !== 'bounce') {
                         return;
                     }
                     var interval = window.setInterval(this.onSecondsTick, 1000);
@@ -198,8 +199,8 @@ System.register(['react'], function (exports, module) {
                 AnalogClock.prototype.render = function () {
                     var _this = this;
                     var className = styles['clock'] + ' ' +
-                        styles[this.props.options.style] + ' ' +
-                        styles[this.props.options.animation];
+                        styles[this.props.style] + ' ' +
+                        styles[this.props.animation];
                     return (createElement("section", { className: styles['AnalogClock'] },
                         createElement("div", { className: className, ref: function (el) { return _this.clockElement = el; } },
                             createElement("div", { className: styles['hours-container'], ref: function (el) { return _this.hoursContainer = el; } },
@@ -208,7 +209,7 @@ System.register(['react'], function (exports, module) {
                                 createElement("div", { className: styles['minutes'], ref: function (el) { return _this.minutesElement = el; } })),
                             createElement("div", { className: styles['seconds-container'], ref: function (el) { return _this.secondsContainer = el; } },
                                 createElement("div", { className: styles['seconds'], ref: function (el) { return _this.secondsElement = el; } }))),
-                        this.props.options.label && (createElement("div", { className: styles['label'] }, this.props.options.label))));
+                        this.props.label && (createElement("div", { className: styles['label'] }, this.props.label))));
                 };
                 return AnalogClock;
             }(Component)));
