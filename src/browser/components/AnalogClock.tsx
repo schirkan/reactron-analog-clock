@@ -59,8 +59,11 @@ export class AnalogClock extends React.Component<IAnalogClockOptions> {
    */
   private initClock() {
     const now = new Date();
-    const tz = this.props.timezone !== 'local' ? this.props.timezone : '';
-    const time = moment(now).tz(tz);
+    let time = moment(now);
+
+    if (this.props.timezone !== 'local') {
+      time = time.tz(this.props.timezone);
+    }
 
     const hours = time.hours();
     const minutes = time.minutes();

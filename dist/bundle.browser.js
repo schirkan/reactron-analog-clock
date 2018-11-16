@@ -104,8 +104,10 @@ System.register(['react'], function (exports, module) {
                 AnalogClock.prototype.initClock = function () {
                     var _this = this;
                     var now = new Date();
-                    var tz = this.props.timezone !== 'local' ? this.props.timezone : '';
-                    var time = moment(now).tz(tz);
+                    var time = moment(now);
+                    if (this.props.timezone !== 'local') {
+                        time = time.tz(this.props.timezone);
+                    }
                     var hours = time.hours();
                     var minutes = time.minutes();
                     var seconds = time.seconds();
