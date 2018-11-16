@@ -1,4 +1,3 @@
-import { IReactronComponentProps } from '@schirkan/reactron-interfaces';
 import * as React from 'react';
 
 import styles from './AnalogClock.scss';
@@ -16,7 +15,7 @@ export interface IAnalogClockOptions {
   animation: 'bounce' | 'steps' | 'linear';
 }
 
-export class AnalogClock extends React.Component<IReactronComponentProps<IAnalogClockOptions>> {
+export class AnalogClock extends React.Component<IAnalogClockOptions> {
   private intervals: number[] = [];
   private secondsAngle: number = 0;
 
@@ -30,7 +29,7 @@ export class AnalogClock extends React.Component<IReactronComponentProps<IAnalog
   private minutesElement: Element | null;
   private secondsElement: Element | null;
 
-  constructor(props: IReactronComponentProps<IAnalogClockOptions>) {
+  constructor(props: IAnalogClockOptions) {
     super(props);
 
     this.onSecondsTick = this.onSecondsTick.bind(this);
@@ -60,7 +59,8 @@ export class AnalogClock extends React.Component<IReactronComponentProps<IAnalog
    */
   private initClock() {
     const now = new Date();
-    const time = moment(now).tz(this.props.options.timezone); // "America/New_York"
+    const tz = this.props.timezone !== 'local' ? this.props.timezone : '';
+    const time = moment(now).tz(tz);
 
     const hours = time.hours();
     const minutes = time.minutes();
@@ -101,7 +101,7 @@ export class AnalogClock extends React.Component<IReactronComponentProps<IAnalog
    * Move the second containers
    */
   private moveSecondHands() {
-    if (!this.clockElement || !this.secondsContainer || this.props.options.animation !== 'bounce') {
+    if (!this.clockElement || !this.secondsContainer || this.props.animation !== 'bounce') {
       return;
     }
 
@@ -166,8 +166,8 @@ export class AnalogClock extends React.Component<IReactronComponentProps<IAnalog
 
   public render() {
     const className = styles['clock'] + ' ' +
-      styles[this.props.options.style] + ' ' +
-      styles[this.props.options.animation];
+      styles[this.props.style] + ' ' +
+      styles[this.props.animation];
 
     return (
       <section className={styles['AnalogClock']}>
@@ -182,8 +182,8 @@ export class AnalogClock extends React.Component<IReactronComponentProps<IAnalog
             <div className={styles['seconds']} ref={el => this.secondsElement = el} />
           </div>
         </div>
-        {this.props.options.label && (
-          <div className={styles['label']}>{this.props.options.label}</div>
+        {this.props.label && (
+          <div className={styles['label']}>{this.props.label}</div>
         )}
       </section>
     );
