@@ -1,10 +1,12 @@
-System.register(['react'], function (exports, module) {
+System.register(['react', 'moment'], function (exports, module) {
     'use strict';
-    var createElement, Component;
+    var createElement, Component, moment;
     return {
         setters: [function (module) {
             createElement = module.createElement;
             Component = module.Component;
+        }, function (module) {
+            moment = module.default;
         }],
         execute: function () {
 
@@ -68,10 +70,6 @@ System.register(['react'], function (exports, module) {
             var styles = {"AnalogClock":"AnalogClock_AnalogClock__1uVDD","clock":"AnalogClock_clock__3Mbv5","minutes-container":"AnalogClock_minutes-container__32qVO","hours-container":"AnalogClock_hours-container__28dAN","seconds-container":"AnalogClock_seconds-container__2dRxt","rotate":"AnalogClock_rotate__3G1Jr","linear":"AnalogClock_linear__3FerC","steps":"AnalogClock_steps__34M-U","local":"AnalogClock_local__aaZIp","bounce":"AnalogClock_bounce__2_uLw","hours":"AnalogClock_hours__29zsL","minutes":"AnalogClock_minutes__uz73E","seconds":"AnalogClock_seconds__1seBo","label":"AnalogClock_label__2P-dG","station":"AnalogClock_station__3z3oT","ios7":"AnalogClock_ios7__2eplF","simple":"AnalogClock_simple__2yQrz","angled":"AnalogClock_angled__1bUil"};
             styleInject(css);
 
-            // tslint:disable:no-string-literal
-            // tslint:disable:no-var-requires
-            var moment = require('moment');
-            var momentTimezone = require('moment-timezone');
             var AnalogClock = exports('AnalogClock', /** @class */ (function (_super) {
                 __extends(AnalogClock, _super);
                 function AnalogClock(props) {

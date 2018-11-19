@@ -3,10 +3,9 @@ import * as React from 'react';
 import styles from './AnalogClock.scss';
 
 // tslint:disable:no-string-literal
-// tslint:disable:no-var-requires
 
-const moment = require('moment');
-const momentTimezone = require('moment-timezone');
+import moment from 'moment';
+import momentTimezone from 'moment-timezone';
 
 export interface IAnalogClockOptions {
   style: 'simple' | 'station' | 'ios7';
