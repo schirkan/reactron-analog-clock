@@ -1,8 +1,10 @@
-System.register(['react', 'moment'], function (exports, module) {
+System.register(['moment-timezone', 'react', 'moment'], function (exports, module) {
     'use strict';
-    var createElement, Component, moment;
+    var momentTimezone, createElement, Component, moment;
     return {
         setters: [function (module) {
+            momentTimezone = module.default;
+        }, function (module) {
             createElement = module.createElement;
             Component = module.Component;
         }, function (module) {
@@ -214,6 +216,15 @@ System.register(['react', 'moment'], function (exports, module) {
                 return AnalogClock;
             }(Component)));
 
+            var timezoneNames = momentTimezone.tz.names();
+            var timezones = [];
+            timezoneNames.forEach(function (timezone) {
+                timezones.push({
+                    text: "(GMT" + moment.tz(timezone).format('Z') + ") " + timezone.replace('_', ' '),
+                    value: timezone
+                });
+            });
+            timezones.sort(function (a, b) { return a.text.localeCompare(b.text); });
             var components = exports('components', [{
                     component: AnalogClock,
                     description: 'Analog Clock',
@@ -253,12 +264,8 @@ System.register(['react', 'moment'], function (exports, module) {
                             name: 'timezone',
                             valueType: 'string',
                             values: [
-                                { value: 'local', text: 'Local' },
-                                { value: 'Europe/Berlin', text: 'Europe/Berlin' },
-                                { value: 'Europe/London', text: 'Europe/London' },
-                                { value: 'Asia/Tokyo', text: 'Asia/Tokyo' },
-                                { value: 'America/New_York', text: 'America/New York' },
-                            ]
+                                { value: 'local', text: 'Local' }
+                            ].concat(timezones)
                         }],
                     name: 'AnalogClock'
                 }]);

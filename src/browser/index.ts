@@ -1,7 +1,24 @@
 import { IReactronComponentDefinition } from '@schirkan/reactron-interfaces';
+import moment from 'moment';
+import momentTimezone from 'moment-timezone';
 import { AnalogClock } from './components/AnalogClock';
 
-export * from './components/AnalogClock';
+interface ITimezone {
+    value: string;
+    text: string;
+}
+
+const timezoneNames = momentTimezone.tz.names();
+const timezones: ITimezone[] = [];
+
+timezoneNames.forEach(timezone => {
+    timezones.push({
+        text: "(GMT"+moment.tz(timezone).format('Z')+") " + timezone.replace('_', ' '),
+        value: timezone
+    });
+});
+
+timezones.sort((a, b) => a.text.localeCompare(b.text));
 
 export const components: IReactronComponentDefinition[] = [{
     component: AnalogClock,
@@ -18,7 +35,7 @@ export const components: IReactronComponentDefinition[] = [{
             { value: 'station', text: 'Station' },
             { value: 'ios7', text: 'IOS 7' },
         ]
-    },{
+    }, {
         defaultValue: 'bounce',
         description: 'Clock Animation',
         displayName: 'Animation',
@@ -29,13 +46,13 @@ export const components: IReactronComponentDefinition[] = [{
             { value: 'steps', text: 'Steps' },
             { value: 'linear', text: 'Linear' },
         ]
-    },{
+    }, {
         defaultValue: '',
         description: 'Label',
         displayName: 'Label',
         name: 'label',
         valueType: 'string'
-    },{
+    }, {
         defaultValue: 'local',
         description: 'Timezone',
         displayName: 'Timezone',
@@ -43,11 +60,10 @@ export const components: IReactronComponentDefinition[] = [{
         valueType: 'string',
         values: [
             { value: 'local', text: 'Local' },
-            { value: 'Europe/Berlin', text: 'Europe/Berlin' },
-            { value: 'Europe/London', text: 'Europe/London' },
-            { value: 'Asia/Tokyo', text: 'Asia/Tokyo' },
-            { value: 'America/New_York', text: 'America/New York' },
+            ...timezones
         ]
     }],
     name: 'AnalogClock'
 }];
+
+export * from './components/AnalogClock';
