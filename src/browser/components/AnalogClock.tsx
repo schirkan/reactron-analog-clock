@@ -173,6 +173,7 @@ export class AnalogClock extends React.Component<IAnalogClockOptions> {
 
     return (
       <section className={styles['AnalogClock']}>
+        <svg viewBox="0 0 1 1" />
         <div className={className} ref={el => this.clockElement = el}>
           <div className={styles['hours-container']} ref={el => this.hoursContainer = el}>
             <div className={styles['hours']} ref={el => this.hoursElement = el} />
@@ -183,10 +184,10 @@ export class AnalogClock extends React.Component<IAnalogClockOptions> {
           <div className={styles['seconds-container']} ref={el => this.secondsContainer = el}>
             <div className={styles['seconds']} ref={el => this.secondsElement = el} />
           </div>
+          {this.props.label && (
+            <div className={styles['label']}>{this.props.label}</div>
+          )}
         </div>
-        {this.props.label && (
-          <div className={styles['label']}>{this.props.label}</div>
-        )}
       </section>
     );
   }
